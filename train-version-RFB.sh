@@ -6,9 +6,9 @@ mkdir -p "$log_dir"
 
 python3 -u train.py \
   --datasets \
-  ./data/wider_face_add_lm_10_10 \
+  ./data/wider_face_combined_MAFA \
   --validation_dataset \
-  ./data/wider_face_add_lm_10_10 \
+  ./data/wider_face_combined_MAFA \
   --net \
   RFB \
   --num_epochs \
@@ -24,7 +24,7 @@ python3 -u train.py \
   --checkpoint_folder \
   ${model_root_path} \
   --num_workers \
-  0 \
+  4 \
   --log_dir \
   ${log_dir} \
   --cuda_index \

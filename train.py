@@ -143,8 +143,10 @@ def train(loader, net, criterion, optimizer, device, debug_steps=100, epoch=-1):
         optimizer.zero_grad()
         confidence, locations = net(images)
         regression_loss, classification_loss = criterion(confidence, locations, labels, boxes)  # TODO CHANGE BOXES
+        # Alternating backpropagation is more beneficial for accuracy
         loss = regression_loss + classification_loss
-        loss.backward()
+        regression_loss.backward(retain_graph=True)
+        classification_loss.backward()
         optimizer.step()
 
         running_loss += loss.item()
