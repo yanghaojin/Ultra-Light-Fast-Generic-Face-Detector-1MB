@@ -122,7 +122,9 @@ def to_device(data: torch.Tensor, device: torch.device) -> torch.Tensor:
         return [to_device(x, device) for x in data]
     return data.to(device)
 
-DEVICE = get_device() #torch.device("cuda:0" if torch.cuda.is_available() and args.use_cuda else "cpu")
+cuda_index_list = [int(v.strip()) for v in args.cuda_index.split(",")]
+
+DEVICE = torch.device("cuda:"+str(cuda_index_list[0]) if torch.cuda.is_available() and args.use_cuda else "cpu")
 
 if args.use_cuda and torch.cuda.is_available():
     torch.backends.cudnn.benchmark = True
