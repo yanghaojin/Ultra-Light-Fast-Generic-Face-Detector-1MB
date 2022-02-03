@@ -4,6 +4,7 @@ This code uses the pytorch model to detect faces from live video or camera.
 import argparse
 import sys
 import cv2
+import torch
 
 from vision.ssd.config.fd_config import define_img_size
 
@@ -12,15 +13,15 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('--net_type', default="RFB", type=str,
                     help='The network architecture ,optional: RFB (higher precision) or slim (faster)')
-parser.add_argument('--input_size', default=480, type=int,
+parser.add_argument('--input_size', default=640, type=int,
                     help='define network input size,default optional value 128/160/320/480/640/1280')
-parser.add_argument('--threshold', default=0.7, type=float,
+parser.add_argument('--threshold', default=0.5, type=float,
                     help='score threshold')
-parser.add_argument('--candidate_size', default=1000, type=int,
+parser.add_argument('--candidate_size', default=800, type=int,
                     help='nms candidate size')
 parser.add_argument('--path', default="imgs", type=str,
                     help='imgs dir')
-parser.add_argument('--test_device', default="cuda:0", type=str,
+parser.add_argument('--test_device', default="cpu", type=str,
                     help='cuda:0 or cpu')
 parser.add_argument('--video_path', default="/home/linzai/Videos/video/16_1.MP4", type=str,
                     help='path of video')
@@ -33,12 +34,12 @@ from vision.ssd.mb_tiny_fd import create_mb_tiny_fd, create_mb_tiny_fd_predictor
 from vision.ssd.mb_tiny_RFB_fd import create_Mb_Tiny_RFB_fd, create_Mb_Tiny_RFB_fd_predictor
 from vision.utils.misc import Timer
 
-label_path = "./models/voc-model-labels.txt"
+label_path = "models/train-version-RFB/voc-model-labels.txt"
 
 net_type = args.net_type
 
-cap = cv2.VideoCapture(args.video_path)  # capture from video
-# cap = cv2.VideoCapture(0)  # capture from camera
+# cap = cv2.VideoCapture(args.video_path)  # capture from video
+cap = cv2.VideoCapture(0)  # capture from camera
 
 class_names = [name.strip() for name in open(label_path).readlines()]
 num_classes = len(class_names)
@@ -53,7 +54,7 @@ if net_type == 'slim':
     net = create_mb_tiny_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_mb_tiny_fd_predictor(net, candidate_size=candidate_size, device=test_device)
 elif net_type == 'RFB':
-    model_path = "models/pretrained/version-RFB-320.pth"
+    model_path = "models/train-version-RFB/RFB-Epoch-115-Loss-2.2968465581836317.pth"
     # model_path = "models/pretrained/version-RFB-640.pth"
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_Mb_Tiny_RFB_fd_predictor(net, candidate_size=candidate_size, device=test_device)
@@ -76,15 +77,22 @@ while True:
     print('Time: {:.6f}s, Detect Objects: {:d}.'.format(interval, labels.size(0)))
     for i in range(boxes.size(0)):
         box = boxes[i, :]
-        label = f" {probs[i]:.2f}"
-        cv2.rectangle(orig_image, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 4)
+        label = labels[i].item()
+        prob = f" {probs[i]:.2f}"
+        cv2.rectangle(orig_image, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 4)
 
-        # cv2.putText(orig_image, label,
-        #             (box[0], box[1] - 10),
-        #             cv2.FONT_HERSHEY_SIMPLEX,
-        #             0.5,  # font scale
-        #             (0, 0, 255),
-        #             2)  # line type
+        cv2.putText(orig_image, class_names[label],
+                    (int(box[0]), int(box[1]) - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    2,  # font scale
+                    (0, 0, 255),
+                    2)  # line type
+        cv2.putText(orig_image, prob,
+                    (int(box[0])-10, int(box[1])-60),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    2,  # font scale
+                    (0, 255, 0),
+                    2)  # line type
     orig_image = cv2.resize(orig_image, None, None, fx=0.8, fy=0.8)
     sum += boxes.size(0)
     cv2.imshow('annotated', orig_image)

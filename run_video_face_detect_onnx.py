@@ -42,9 +42,9 @@ def predict(width, height, confidences, boxes, prob_threshold, iou_threshold=0.3
     return picked_box_probs[:, :4].astype(np.int32), np.array(picked_labels), picked_box_probs[:, 4]
 
 
-label_path = "models/voc-model-labels.txt"
+label_path = "models/train-version-RFB/voc-model-labels.txt"
 
-onnx_path = "models/onnx/version-RFB-320.onnx"
+onnx_path = "models/onnx/RFB-Epoch-115-Loss-2.onnx"
 class_names = [name.strip() for name in open(label_path).readlines()]
 
 predictor = onnx.load(onnx_path)
@@ -55,7 +55,7 @@ predictor = backend.prepare(predictor, device="CPU")  # default CPU
 ort_session = ort.InferenceSession(onnx_path)
 input_name = ort_session.get_inputs()[0].name
 
-cap = cv2.VideoCapture("/home/linzai/Videos/video/16_6.MP4")  # capture from camera
+cap = cv2.VideoCapture(0)  # capture from camera
 
 threshold = 0.7
 
