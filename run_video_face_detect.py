@@ -4,18 +4,18 @@ This code uses the pytorch model to detect faces from live video or camera.
 import argparse
 import sys
 import cv2
-import torch
+import numpy as np
 
 from vision.ssd.config.fd_config import define_img_size
 
 parser = argparse.ArgumentParser(
     description='detect_video')
 
-parser.add_argument('--net_type', default="RFB", type=str,
+parser.add_argument('--net_type', default="slim", type=str,
                     help='The network architecture ,optional: RFB (higher precision) or slim (faster)')
 parser.add_argument('--input_size', default=640, type=int,
                     help='define network input size,default optional value 128/160/320/480/640/1280')
-parser.add_argument('--threshold', default=0.5, type=float,
+parser.add_argument('--threshold', default=0.7, type=float,
                     help='score threshold')
 parser.add_argument('--candidate_size', default=800, type=int,
                     help='nms candidate size')
@@ -49,12 +49,12 @@ candidate_size = args.candidate_size
 threshold = args.threshold
 
 if net_type == 'slim':
-    model_path = "models/pretrained/version-slim-320.pth"
+    model_path = "models/train-version-slim-640/slim-Epoch-199-Loss-2.3842120218597.pth"
     # model_path = "models/pretrained/version-slim-640.pth"
     net = create_mb_tiny_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_mb_tiny_fd_predictor(net, candidate_size=candidate_size, device=test_device)
 elif net_type == 'RFB':
-    model_path = "models/train-version-RFB/RFB-Epoch-115-Loss-2.2968465581836317.pth"
+    # model_path = "models/train-version-RFB-balanced-640/RFB-Epoch-105-Loss-2.342700142108026.pth"
     # model_path = "models/pretrained/version-RFB-640.pth"
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_Mb_Tiny_RFB_fd_predictor(net, candidate_size=candidate_size, device=test_device)
@@ -98,6 +98,7 @@ while True:
     cv2.imshow('annotated', orig_image)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
 cap.release()
 cv2.destroyAllWindows()
 print("all face num:{}".format(sum))

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-model_root_path="./models/train-version-RFB"
+model_root_path="./models/train-version-RFB-640"
 log_dir="$model_root_path/logs"
 log="$log_dir/log"
 mkdir -p "$log_dir"
 
 python3 -u train.py \
   --datasets \
-  ./data/wider_face_combined_MAFA \
+  ./data/wider_MAFA_balanced \
   --validation_dataset \
-  ./data/wider_face_combined_MAFA \
+  ./data/wider_MAFA_balanced \
   --net \
   RFB \
   --num_epochs \
@@ -20,11 +20,11 @@ python3 -u train.py \
   --batch_size \
   24 \
   --input_size \
-  320 \
+  640 \
   --checkpoint_folder \
   ${model_root_path} \
   --num_workers \
-  4 \
+  8 \
   --log_dir \
   ${log_dir} \
   --cuda_index \

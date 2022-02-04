@@ -6,9 +6,9 @@ mkdir -p "$log_dir"
 
 python3 -u train.py \
   --datasets \
-  ./data/wider_face_combined_MAFA \
+  ./data/wider_MAFA_balanced \
   --validation_dataset \
-  ./data/wider_face_combined_MAFA \
+  ./data/wider_MAFA_balanced \
   --net \
   slim \
   --num_epochs \

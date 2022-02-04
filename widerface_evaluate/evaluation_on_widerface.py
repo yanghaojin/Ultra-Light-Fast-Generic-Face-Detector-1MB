@@ -40,7 +40,7 @@ if net_type == 'slim':
     net = create_mb_tiny_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_mb_tiny_fd_predictor(net, candidate_size=candidate_size, device=test_device)
 elif net_type == 'RFB':
-    model_path = "../models/train-version-RFB/RFB-Epoch-115-Loss-2.2968465581836317.pth"
+    model_path = "../models/train-version-RFB/RFB-Epoch-155-Loss-2.311990024659458.pth"
     # model_path = "../models/pretrained/version-RFB-320.pth"
     # model_path = "../models/pretrained/version-RFB-640.pth"
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, device=test_device)
