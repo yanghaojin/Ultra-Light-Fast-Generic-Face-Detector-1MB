@@ -16,11 +16,11 @@ parser.add_argument('--net_type', default="RFB", type=str,
                     help='The network architecture ,optional: RFB (higher precision) or slim (faster)')
 parser.add_argument('--input_size', default=1280, type=int,
                     help='define network input size,default optional value 128/160/320/480/640/1280')
-parser.add_argument('--threshold', default=0.25, type=float,
+parser.add_argument('--threshold', default=0.3, type=float,
                     help='score threshold')
 parser.add_argument('--candidate_size', default=1200, type=int,
                     help='nms candidate size')
-parser.add_argument('--path', default="imgs-1", type=str,
+parser.add_argument('--path', default="imgs", type=str,
                     help='imgs dir')
 parser.add_argument('--test_device', default="cpu", type=str,
                     help='cuda:0 or cpu')
@@ -41,9 +41,9 @@ if args.net_type == 'slim':
     net = create_mb_tiny_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_mb_tiny_fd_predictor(net, candidate_size=args.candidate_size, device=test_device)
 elif args.net_type == 'RFB':
-    model_path = "models/train-version-RFB-640/RFB-Epoch-199-0.827_0.804_0.578.pth"
+    # model_path = "models/train-version-RFB-640/RFB-Epoch-199-0.827_0.804_0.578.pth"
     # model_path = "models/train-version-RFB-balanced-640/RFB-640-masked_face-v1.pth"
-    # model_path = "models/RFB-balanced-human_occ-640-sgd/RFB-640-masked_face-v2.pth"
+    model_path = "models/RFB-balanced-human_occ-640-sgd/RFB-640-masked_face-v2.pth"
     # model_path = "models/train-version-RFB-320-sgd/RFB-320-masked_face-v2.pth"
     # model_path = "models/pretrained/version-RFB-640.pth"
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, device=test_device)
@@ -71,12 +71,12 @@ for file_path in listdir:
         # label = f"""{voc_dataset.class_names[labels[i]]}: {probs[i]:.2f}"""
         label = f"{probs[i]:.2f}"
         # cv2.putText(orig_image, label, (box[0], box[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        # cv2.putText(orig_image, class_names[label_index],
-        #             (int(box[0]), int(box[1]) - 10),
-        #             cv2.FONT_HERSHEY_SIMPLEX,
-        #             0.7,  # font scale
-        #             (0, 0, 255),
-        #             2)  # line type
+        cv2.putText(orig_image, class_names[label_index],
+                    (int(box[0]), int(box[1]) - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,  # font scale
+                    (100, 0, 255),
+                    1)  # line type
     cv2.putText(orig_image, str(boxes.size(0)), (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
     cv2.imwrite(os.path.join(result_path, file_path), orig_image)
     print(f"Found {len(probs)} faces. The output image is {result_path}")
