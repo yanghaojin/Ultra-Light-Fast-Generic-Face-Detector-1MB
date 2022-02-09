@@ -159,6 +159,7 @@ def inference():
     for file_path in listdir:
         img_path = os.path.join(imgs_path, file_path)
         img_ori = cv2.imread(img_path)
+        if img_ori is None: continue
         rect = cv2.resize(img_ori, (witdh, height))
         rect = cv2.cvtColor(rect, cv2.COLOR_BGR2RGB)
         net.setInput(dnn.blobFromImage(rect, 1 / image_std, (witdh, height), 127))
@@ -166,7 +167,7 @@ def inference():
         boxes, scores = net.forward(["boxes", "scores"])
         print("inference time: {} s".format(round(time.time() - time_time, 4)))
         boxes = np.expand_dims(np.reshape(boxes, (-1, 4)), axis=0)
-        scores = np.expand_dims(np.reshape(scores, (-1, 2)), axis=0)
+        scores = np.expand_dims(np.reshape(scores, (-1, 3)), axis=0)
         boxes = convert_locations_to_boxes(boxes, priors, center_variance, size_variance)
         boxes = center_form_to_corner_form(boxes)
         boxes, labels, probs = predict(img_ori.shape[1], img_ori.shape[0], scores, boxes, args.threshold)

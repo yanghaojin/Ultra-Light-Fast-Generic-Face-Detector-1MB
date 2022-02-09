@@ -12,13 +12,13 @@ import cv2
 sys.path.append('../')
 from vision.ssd.config.fd_config import define_img_size
 
-input_img_size = 640  # define input size ,default optional(128/160/320/480/640/1280)
+input_img_size = 320  # define input size ,default optional(128/160/320/480/640/1280)
 define_img_size(input_img_size)  # must put define_img_size() before 'import create_mb_tiny_fd, create_mb_tiny_fd_predictor'
 
 from vision.ssd.mb_tiny_fd import create_mb_tiny_fd, create_mb_tiny_fd_predictor
 from vision.ssd.mb_tiny_RFB_fd import create_Mb_Tiny_RFB_fd, create_Mb_Tiny_RFB_fd_predictor
 
-label_path = "../models/train-version-RFB/voc-model-labels.txt"
+label_path = "../models/train-version-RFB-640/voc-model-labels.txt"
 
 # net_type = "slim"          # inference faster,lower precision
 net_type = "RFB"  # inference lower,higher precision
@@ -40,7 +40,7 @@ if net_type == 'slim':
     net = create_mb_tiny_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_mb_tiny_fd_predictor(net, candidate_size=candidate_size, device=test_device)
 elif net_type == 'RFB':
-    model_path = "../models/train-version-RFB/RFB-Epoch-155-Loss-2.311990024659458.pth"
+    model_path = "../models/train-version-RFB-320-sgd/RFB-Epoch-195-Loss-2.515751586264412.pth"
     # model_path = "../models/pretrained/version-RFB-320.pth"
     # model_path = "../models/pretrained/version-RFB-640.pth"
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, device=test_device)

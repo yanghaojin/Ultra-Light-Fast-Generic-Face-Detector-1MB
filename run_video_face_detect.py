@@ -11,7 +11,7 @@ from vision.ssd.config.fd_config import define_img_size
 parser = argparse.ArgumentParser(
     description='detect_video')
 
-parser.add_argument('--net_type', default="slim", type=str,
+parser.add_argument('--net_type', default="RFB", type=str,
                     help='The network architecture ,optional: RFB (higher precision) or slim (faster)')
 parser.add_argument('--input_size', default=640, type=int,
                     help='define network input size,default optional value 128/160/320/480/640/1280')
@@ -34,7 +34,7 @@ from vision.ssd.mb_tiny_fd import create_mb_tiny_fd, create_mb_tiny_fd_predictor
 from vision.ssd.mb_tiny_RFB_fd import create_Mb_Tiny_RFB_fd, create_Mb_Tiny_RFB_fd_predictor
 from vision.utils.misc import Timer
 
-label_path = "models/train-version-RFB/voc-model-labels.txt"
+label_path = "models/train-version-RFB-640/voc-model-labels.txt"
 
 net_type = args.net_type
 
@@ -49,12 +49,12 @@ candidate_size = args.candidate_size
 threshold = args.threshold
 
 if net_type == 'slim':
-    model_path = "models/train-version-slim-640/slim-Epoch-199-Loss-2.3842120218597.pth"
+    model_path = "models/pretrained/version-slim-320.pth"
     # model_path = "models/pretrained/version-slim-640.pth"
     net = create_mb_tiny_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_mb_tiny_fd_predictor(net, candidate_size=candidate_size, device=test_device)
 elif net_type == 'RFB':
-    # model_path = "models/train-version-RFB-balanced-640/RFB-Epoch-105-Loss-2.342700142108026.pth"
+    model_path = "models/train-version-RFB-640/RFB-640-masked_face-v1.pth"
     # model_path = "models/pretrained/version-RFB-640.pth"
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_Mb_Tiny_RFB_fd_predictor(net, candidate_size=candidate_size, device=test_device)
